@@ -7,7 +7,7 @@ use obj_loader::load_obj;
 use renderer::render;
 
 fn main() {
-    let triangles = load_obj("esfera.obj");
+    let triangles = load_obj("esfera3.obj");
     println!("Triángulos cargados: {}", triangles.len());
     render(&triangles);
 }
