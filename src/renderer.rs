@@ -404,7 +404,7 @@ pub fn render(triangles: &Vec<Triangle>) {
     let mut time = 0.0f32;
     let mut dist = 10.0f32;
     let mut shader_mode = 0u32;
-
+    //clone current windoww
     let window_clone = window.clone();
 
     event_loop.run(move |event, elwt| {
