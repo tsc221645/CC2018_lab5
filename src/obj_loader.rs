@@ -2,7 +2,6 @@ use bytemuck::{Pod, Zeroable};
 use wgpu::util::DeviceExt;
 use std::mem;
 
-// ========= Vertex =========
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct Vertex {
@@ -10,7 +9,6 @@ pub struct Vertex {
     pub normal:   [f32; 3],
 }
 
-// 👉 Layout para wgpu 0.22
 impl Vertex {
     pub fn desc<'a>() -> wgpu::VertexBufferLayout<'a> {
         wgpu::VertexBufferLayout {
@@ -32,8 +30,7 @@ impl Vertex {
     }
 }
 
-// ========= Mesh =========
-// (Si ya tienes tu Mesh y draw(), mantén los tuyos)
+
 pub struct Mesh {
     pub vertex_buffer: wgpu::Buffer,
     pub index_buffer:  wgpu::Buffer,
@@ -66,8 +63,7 @@ impl Mesh {
     }
 }
 
-// ========= Esfera UV de respaldo =========
-// (Puedes borrar esto si cargas tu OBJ)
+
 pub fn make_uv_sphere(
     device: &wgpu::Device,
     _queue: &wgpu::Queue,

@@ -29,7 +29,6 @@ pub struct GpuRenderer<'window> {
 
 impl<'window> GpuRenderer<'window> {
     pub async fn new(window: &'window winit::window::Window) -> Self {
-        // Instance/Surface/Adapter
         let instance = wgpu::Instance::default();
         let surface = instance.create_surface(window).expect("surface");
         let adapter = instance
@@ -41,7 +40,6 @@ impl<'window> GpuRenderer<'window> {
             .await
             .expect("adapter");
 
-        // Device/Queue (wgpu 0.22 API)
         let (device, queue) = adapter
             .request_device(
                 &wgpu::DeviceDescriptor {
@@ -57,7 +55,6 @@ impl<'window> GpuRenderer<'window> {
         let device = Arc::new(device);
         let queue = Arc::new(queue);
 
-        // Surface config (wgpu 0.22)
         let size = window.inner_size();
         let caps = surface.get_capabilities(&adapter);
         let format = caps.formats[0];
@@ -73,7 +70,6 @@ impl<'window> GpuRenderer<'window> {
         };
         surface.configure(&device, &config);
 
-        // Shader externo
         let shader_src = std::fs::read_to_string("src/shader.wgsl")
             .expect("No se pudo leer src/shader.wgsl");
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
@@ -81,7 +77,7 @@ impl<'window> GpuRenderer<'window> {
             source: wgpu::ShaderSource::Wgsl(shader_src.into()),
         });
 
-        // Uniforms
+
         let globals = Globals { time: 0.0, zoom: 1.0, mode: 2, _pad: 0 };
         let globals_buf = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("globals"),
@@ -118,7 +114,7 @@ impl<'window> GpuRenderer<'window> {
             push_constant_ranges: &[],
         });
 
-        // Pipeline (wgpu 0.22 requiere compilation_options y cache)
+
         let pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: Some("pipeline"),
             layout: Some(&pipeline_layout),
@@ -155,7 +151,7 @@ impl<'window> GpuRenderer<'window> {
             pipeline,
             start_time: Instant::now(),
             zoom: 1.0,
-            mode: 2, // 1=Star, 2=Rock, 3=Gas, 4=Earth, 5=Moon
+            mode: 2,
         }
     }
 
@@ -163,7 +159,6 @@ impl<'window> GpuRenderer<'window> {
         let frame = self.surface.get_current_texture()?;
         let view = frame.texture.create_view(&wgpu::TextureViewDescriptor::default());
 
-        // Actualizar uniforms
         let g = Globals {
             time: self.start_time.elapsed().as_secs_f32(),
             zoom: self.zoom,
@@ -217,7 +212,7 @@ impl<'window> GpuRenderer<'window> {
         self.surface.configure(&self.device, &self.config);
     }
 
-    // Teclas 1–5 y zoom con +/− y scroll (winit 0.30)
+    
     pub fn input(&mut self, event: &WindowEvent) -> bool {
         match event {
             WindowEvent::KeyboardInput {

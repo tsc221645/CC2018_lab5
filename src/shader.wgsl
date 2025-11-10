@@ -31,7 +31,6 @@ fn saturate3(x: vec3<f32>) -> vec3<f32> {
     return clamp(x, vec3<f32>(0.0), vec3<f32>(1.0));
 }
 
-// --- simple trig "noise" ---
 fn noise3(p: vec3<f32>, t: f32) -> f32 {
     return sin(p.x * 1.7 + sin(p.z * 0.9) + t * 0.05) *
            cos(p.y * 1.3 - cos(p.x * 0.6) + t * 0.04) *
@@ -50,15 +49,13 @@ fn fbm(p0: vec3<f32>, t: f32) -> f32 {
     }
     return clamp(acc, 0.0, 1.0);
 }
-// Coordenadas esféricas estables a partir de la normal
+
 fn spherical_uv(n: vec3<f32>) -> vec2<f32> {
     let u = atan2(n.z, n.x) / (2.0 * 3.14159265) + 0.5;
     let v = n.y * 0.5 + 0.5;
     return vec2<f32>(u, v);
 }
 
-
-// ---- Star ----
 fn shade_star(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
     // Base: mezcla de azules y blancos
     var c = mix(vec3<f32>(0.2, 0.4, 1.0), vec3<f32>(0.9, 0.95, 1.0), n.y * 0.5 + 0.5);
@@ -76,7 +73,6 @@ fn shade_star(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
     return c + vec3<f32>(0.6, 0.8, 1.0) * rim * 1.5;
 }
 
-// ---- Rock (with heart) ----
 fn shade_rock(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
     let p = n * 4.0;
     var relief = fbm(p, t * 0.2);
@@ -99,7 +95,6 @@ fn shade_rock(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
     return c * (0.4 + diff) + spec;
 }
 
-// ---- Gas ----
 fn shade_gas(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
     // Bandas fluidas animadas
     let lat = n.y * 3.14;
@@ -119,8 +114,6 @@ fn shade_gas(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
     return c + vec3<f32>(0.5, 0.4, 0.6) * rim * 0.3;
 }
 
-
-// ---- Earth ----
 fn shade_earth(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
     // Continentes y océanos
     let land = fbm(n * 3.0, t * 0.1);
@@ -142,7 +135,6 @@ fn shade_earth(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
 }
 
 
-// ---- Moon ----
 fn shade_moon(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
     // Coordenadas suavizadas para evitar distorsión
     let uv = spherical_uv(n);
@@ -193,7 +185,6 @@ fn shade_iridescent(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
     let hue_shift = sin(t * 0.3 + n.x * 3.0 + n.y * 5.0 + n.z * 7.0) * 0.5 + 0.5;
     let base_hue = angle * 0.6 + hue_shift * 0.4;
 
-    // Convertir de HSV a RGB manualmente
     let c = 1.0;
     let x = 1.0 - abs((base_hue * 6.0) % 2.0 - 1.0);
     var rgb = vec3<f32>(0.0);
