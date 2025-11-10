@@ -12,7 +12,7 @@ fn main() {
     env_logger::init();
     let event_loop = EventLoop::new().expect("crear event loop");
     let window = Arc::new(event_loop.create_window(Default::default()).expect("crear ventana"));
-    window.set_title("Lab5 - Planetas (wgpu 0.22 / winit 0.30)");
+    window.set_title("Lab5 - Planetas");
     let window_for_gpu = window.clone();
     let mut gpu = pollster::block_on(renderer::GpuRenderer::new(&window_for_gpu));
     let mesh = obj_loader::make_uv_sphere(&gpu.device, &gpu.queue, 64, 64);
