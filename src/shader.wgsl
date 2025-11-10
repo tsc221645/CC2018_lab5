@@ -186,6 +186,43 @@ fn shade_moon(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
     return saturate3(color);
 }
 
+// ---- Iridescent / Crystal ----
+fn shade_iridescent(n: vec3<f32>, v: vec3<f32>, t: f32) -> vec3<f32> {
+    // Interferencia óptica simulada: mezcla de colores espectrales según ángulo de visión
+    let angle = pow(1.0 - max(dot(n, v), 0.0), 1.5);
+    let hue_shift = sin(t * 0.3 + n.x * 3.0 + n.y * 5.0 + n.z * 7.0) * 0.5 + 0.5;
+    let base_hue = angle * 0.6 + hue_shift * 0.4;
+
+    // Convertir de HSV a RGB manualmente
+    let c = 1.0;
+    let x = 1.0 - abs((base_hue * 6.0) % 2.0 - 1.0);
+    var rgb = vec3<f32>(0.0);
+    if (base_hue < 1.0/6.0)      { rgb = vec3<f32>(c, x, 0.0); }
+    else if (base_hue < 2.0/6.0) { rgb = vec3<f32>(x, c, 0.0); }
+    else if (base_hue < 3.0/6.0) { rgb = vec3<f32>(0.0, c, x); }
+    else if (base_hue < 4.0/6.0) { rgb = vec3<f32>(0.0, x, c); }
+    else if (base_hue < 5.0/6.0) { rgb = vec3<f32>(x, 0.0, c); }
+    else                         { rgb = vec3<f32>(c, 0.0, x); }
+
+    // Detalles cristalinos: ruido facetado animado
+    let pattern = abs(sin(n.x * 25.0 + t * 0.8) * cos(n.y * 30.0 - t * 0.6));
+    let crystal = smoothstep(0.6, 0.9, pattern);
+    rgb = mix(rgb, vec3<f32>(0.9, 0.9, 0.95), crystal * 0.4);
+
+    // Iluminación especular intensa tipo metal
+    let light_dir = normalize(vec3<f32>(0.6, 0.4, 0.7));
+    let diff = max(dot(n, light_dir), 0.0);
+    let h = normalize(light_dir + v);
+    let spec = pow(max(dot(n, h), 0.0), 100.0);
+
+    // Reflejo tipo “clear coat”
+    let coat = pow(1.0 - max(dot(n, v), 0.0), 3.5);
+    let reflection = mix(rgb, vec3<f32>(1.0, 1.0, 1.0), coat * 0.6);
+
+    return saturate3(reflection * (0.3 + diff * 0.8) + spec * 0.8);
+}
+
+
 @fragment
 fn fs_main(@location(0) n_in: vec3<f32>) -> @location(0) vec4<f32> {
     var n = normalize(n_in);
@@ -209,6 +246,7 @@ fn fs_main(@location(0) n_in: vec3<f32>) -> @location(0) vec4<f32> {
     else if (mode == 3u) { color = shade_gas(n, v, t); }
     else if (mode == 4u) { color = shade_earth(n, v, t); }
     else if (mode == 5u) { color = shade_moon(n, v, t); }
+    else if (mode == 6u) { color = shade_iridescent(n, v, t); }
 
     // Aplicar luz difusa + rimlight para volumen
     var lit = color * (0.15 + diff * 0.9);

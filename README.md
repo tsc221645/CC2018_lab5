@@ -11,8 +11,11 @@
 ### Gigante Gaseoso
 ![alt text](image-2.png)
 
-### Tierra
+### Planeta Extra 1 - Tierra
 ![alt text](image-3.png)
 
-### Otro Planeta
+### Planeta Extra 2 - Planeta Gaseoso
 ![alt text](image-4.png)
+
+### Planeta Extra 3 - Planeta Iridescente
+![alt text](image-5.png)

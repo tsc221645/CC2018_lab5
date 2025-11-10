@@ -232,6 +232,7 @@ impl<'window> GpuRenderer<'window> {
                             "3" => self.mode = 3,
                             "4" => self.mode = 4,
                             "5" => self.mode = 5,
+                            "6" => self.mode = 6,
                             "+" => self.zoom *= 0.9,
                             "-" => self.zoom *= 1.1,
                             _ => {}
